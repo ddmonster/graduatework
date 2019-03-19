@@ -16,7 +16,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from shopstore import views 
+from userinfo import views as userinfo_views
+from cartinfo import views as cartinfo_views
+from commodity import views as commodity_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^login/$',views.login),
     url(r'^$',views.index),
 ]
