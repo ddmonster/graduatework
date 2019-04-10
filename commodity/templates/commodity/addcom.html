@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <form method="POST" action="/addcom/">
+        {% csrf_token %}
+        商品名称:<input type="text" name="tittle" >
+        货号：<input type="text" name="goodnum">
+        商品价格：<input type="number" name="price">
+        描述：<input type="text" name="desc">
+        数量:<input type="number" name="unit">
+        商品详情：<input type="text" name=detail>
+        <input type="submit">
+    </form>
+</html>
