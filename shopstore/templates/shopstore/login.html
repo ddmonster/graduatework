@@ -11,15 +11,7 @@
     <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <title>登陆</title>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="signin.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -35,29 +27,35 @@
     {%block content%}
     <div class="container" style="width:400px">
       
-      <form class="form-signin">
+      <form  method="POST">
+          {% csrf_token %}
+          
         <h2 class="form-signin-heading">请登录</h2>
-        <label for="inputEmail" class="sr-only">用户名</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="电话号码/用户名" required autofocus>
-        <label for="inputPassword" class="sr-only">密码</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="密码" required>
-        <div class="checkbox">
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">登陆</button><span style="color:red">登陆失败请重试！</span>
-        
+        {{form}}
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="登陆" ></input>
+       
+        {%if havepe%}
+        <span style="color:red">登陆失败请重试！</span>
+        {%endif%}
       </form>
       <a href="/signup"><button class="btn btn-lg btn-primary btn-block" type="button" style="margin-top: 10px">注册</button></a>
 
     </div> <!-- /container -->
 
-{%endblock%}
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
     <script src="/static/js/jquery.min.js">
     </script>
     <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script>
-      
+   
+        document.getElementById('id_username').className="form-control";
+        document.getElementById('id_username').placeholder="电话号码/用户名";
+        document.getElementById('id_upassword').className="form-control";
+        document.getElementById('id_upassword').style="margin-bottom:10px"
+
+
     </script>
+    {%endblock%}
   </body>
 </html>

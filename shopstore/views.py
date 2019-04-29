@@ -6,7 +6,10 @@ from django import forms
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 # Create your views here.
-class UserForm():
+class UserForm(forms.Form):
+    username=forms.CharField(label="用户名",max_length=50)
+    upassword=forms.CharField(label="密码",max_length=200)
+class loginform(forms.Form):
     username=forms.CharField(label="用户名",max_length=50)
     upassword=forms.CharField(label="密码",max_length=200)
     email = forms.CharField(label="邮箱",max_length=50)
@@ -18,8 +21,10 @@ def index(request):
     print(username)
     return render(request,'shopstore/index.html',{"goods":goods,"username":username})   
 def signup(req):
+    form= loginform()
+    ifsuccess=False
     if req.method == 'POST':
-        uf = UserForm(req.POST)
+        form = loginform(req.POST)
         if uf.is_valid():
             #获得表单数据
             username = uf.cleaned_data['username']
@@ -28,26 +33,39 @@ def signup(req):
             fphone = uf.cleaned_data['phone']
             #添加到数据库
             usern=UserInfo.objects.create(username= username,upassword=password,email=femail,phone=fphone)
+            print(usern)
             if usern:
                 response=HttpResponseRedirect('shopstore/index.html')
                 response.set_cookie('username',username,3600)
                 return response
             else:
-                'shopstore/signup.html'
-    else:
-        uf = UserForm()
-    return render_to_response('shopstore/signup.html',{'uf':uf}, context_instance=RequestContext(req))
+                ifsuccess=False
+                return render(req,'shopstore/signup.html',{"form":form,'ifsuccess':ifsuccess})
+
+    return render(req,'shopstore/signup.html',{"form":form,'ifsuccess':ifsuccess})
 def login(request):
+    havepe=False
+    form = UserForm()
     if request.method == "POST":
         form = UserForm(request.POST)
+        print(form)
         if form.is_valid():
             username=form.cleaned_data["username"]
             upasswd=form.cleaned_data["upassword"]
+            print(username,upasswd)
             havepe=UserInfo.objects.filter(uname=username).filter(upassword=upasswd)
+            print(havepe)
             if havepe:
-                response=HttpResponseRedirect('shopstore/index.html')
+                response=HttpResponseRedirect('/')
                 response.set_cookie('username',username,3600)
                 return response
-            else:    
-                return render(request,"shopstore/signup.html",{"havepe":havepe}) 
-    return render_to_response('shopstore/index.html',{'form':form},context_instance=RequestContext(request))
+            else:  
+                form = UserForm()  
+                havepe=True
+                return render(request,"shopstore/login.html",{"havepe":havepe,"form":form}) 
+    return render(request,'shopstore/login.html',{"havepe":havepe,"form":form})
+def logout(req):
+    response = HttpResponseRedirect('/')
+    #清理cookie里保存username
+    response.delete_cookie('username')
+    return response

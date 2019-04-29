@@ -7,15 +7,23 @@
     <body>
         {%extends 'navigate.html'%}
         {%block content%}
-        <form action="" method="post">
+        <form action="" method="post" style="width:400px;margin:0 auto  ">
 
                 {% csrf_token %}
+                {{form}}
                 
         </form>
 
 
-        {%endblock%}
+       
             <script src="/static/js/jquery.min.js"></script>
             <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+            <script>
+                len=document.getElementsByTagName("input").length
+                for(i=0;i<len;i++){
+                    document.getElementsByTagName("input")[i].className="form-control"
+                }
+            </script>
+            {%endblock%}
     </body>
 </html>
