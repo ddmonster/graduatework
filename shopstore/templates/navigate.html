@@ -1,78 +1,156 @@
 <!DOCTYPE html>
 <html>
-    <head>
-            <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-    </head>
-    <body>
-            <nav class="navbar navbar-default">
-                    <div class="container-fluid">
-                        <!-- Brand and toggle get grouped for better mobile display -->
-                        <div class="navbar-header">
-                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                                data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                                <span class="sr-only">Toggle navigation</span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                            </button>
-                            <a class="navbar-brand" href="/">品牌</a>
-                        </div>
-            
-                        <!-- Collect the nav links, forms, and other content for toggling -->
-                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                <li class="active"><a href="/">主页 <span class="sr-only">(current)</span></a></li>
-                                <li><a href="/login">分类</a></li>
-                                <!-- <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                                        aria-expanded="false">Dropdown <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Action</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#">One more separated link</a></li>
-                                    </ul>
-                                </li> -->
-                            </ul>
-                        
-                        {%block search%}
-                            <form class="navbar-form navbar-left" id="search_bar">
+
+<head>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div style=>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">品牌</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/">主页 <span class="sr-only">(current)</span></a></li>
+                        <li><a href="/login">分类</a></li>
+                    
+                    </ul>
+
+                    {%block search%}
+                    <!-- <form class="navbar-form navbar-left" id="search_bar">
                                 <div class="form-group">
                                     <input type="text" class="form-control" placeholder="搜索商品" style="width:538px;margin-left:200px">
                                 </div>
                                 <button type="submit" class="btn btn-default">搜索</button>
-                            </form>
-                            {%endblock%}
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a href="#">我的订单</a></li>
-                                {% if username is not None%}
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                                        aria-expanded="false">{{username}}<span class="caret"></span></a>
-                                        
-                                    <ul class="dropdown-menu">
-                                        <li><a href="/logout">退出登陆</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
-                                    </ul>
-                                </li>
-                                {% else %}
-                                        <a href="/login" style="margin-right:20px;color:red;line-height: 50px;cursor: pointer">请登录</a>
-                                {% endif %}
+                            </form> -->
+                    {%endblock%}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li style="position:relative;z-index:2">
+                            <a href="#"
+                                style="display: inline;cursor: pointer;font-size: 14px;position:relative;z-index:2">
+                                购物车
+                                <div
+                                    style="width:18px;height:18px;border-radius:50%;background-color:#e94b35;position:absolute;top:3px;left:76px;z-index:3;color: #ffffff; text-align:center ">
+                                    <p id="cartnum">0</p>
+                                </div>
+                                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"
+                                    style="font-size:25px;line-height:50px"></span>
+                            </a>
+                        </li>
+                        {% if username is not None%}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                aria-haspopup="true" aria-expanded="false">{{username}}<span class="caret"></span><span
+                                    class="glyphicon glyphicon-user" style="font-size:20px"></span></a>
+
+                            <ul class="dropdown-menu">
+                                <li><a href="#">用户管理</a></li>
+
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/logout">退出登陆</a></li>
                             </ul>
-                        </div><!-- /.navbar-collapse -->
-                    </div><!-- /.container-fluid -->
-            
-                </nav>
-                {%block content%}
-                {%endblock%}
-                <div style="width:100%;height:300px;background-color: rgb(103, 114, 110);margin-top:100px"></div>
-            <script src="/static/js/jquery.min.js"></script>
-            <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-    </body>
+                        </li>
+                        {% else %}
+
+                        <li><a href="/login" style="color:red;cursor: pointer;display:inline;font-size:14px">请登录<span
+                                    class="glyphicon glyphicon-user" aria-hidden="true"
+                                    style="font-size:25px;line-height:50px"></span></a></li>
+                        {% endif %}
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+
+        </nav>
+    </div>
+    {%block content%}
+    {%endblock%}
+    <div style="width:100%;height:300px;background-color: rgb(103, 114, 110);margin-top:100px"></div>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery.cookie-1.4.1.min.js"></script>
+
+    <script>
+        $cartuse = {
+            // 检查重复增加数量
+            ifsame: function(json, id) {
+                for (var key in json) {
+                    if (json[key].id == id) {
+                        json[key].num += 1;
+                        return false
+                    }
+                }
+                return true
+
+            },
+            //     / 添加到cookies  的json数据结构
+            //       var commodity={
+            //     commodity_name:{commodity_name:commodity_id,num:1}
+            //    }
+            addtocookies:function(id, name) {
+                // 取出cookies中json数组 转化为json格式
+                if (!$.cookie('commodity')) {
+                    var commodity = {
+                        name: { 'id': id, 'num': 1 }
+                    }
+
+                } else {
+                    var commodity = $.parseJSON($.cookie('commodity'))
+                    //检查重复
+                    if ($cartuse.ifsame(commodity, id)) {
+                        //如果重复增加数量后写入返回false不执行下列语句
+                        //如果不重复 执行下列语句进行第一次写入
+
+                        //添加json数据   也可使用 json.name=value方式
+                        commodity[name] = { 'id': id, 'num': 1 }
+
+                    }
+
+                }
+                $.cookie('commodity', JSON.stringify(commodity), { expires: 7 });
+
+            },
+            cartnum: function() {
+                $(document).ready(function() {
+                    // var oldval= parseInt($("#cartnum").text())
+
+                    var commodity = $.parseJSON($.cookie('commodity'))
+                    var value=0
+                    for (var key in commodity) {
+                        value += commodity[key].num
+                      
+                    }
+                    $("#cartnum").text(value)
+
+                })
+
+            }
+        }
+        $(".addto").click(function() {
+
+            commodity_id = parseInt($(this).parent().children("#com_id").text());
+            commodity_name = $(this).parent().children("#namepare").children("#good_name").text();
+            //   使用cookies存储购物车信息  json数据格式作为cookies值 调用函数cartuse
+            $cartuse.addtocookies(commodity_id, commodity_name)
+            $cartuse.cartnum();
+            // $.each(commodity,function(idx,obj){
+            //     alert(obj.tagName);
+            // }); 
+
+        })
+    </script>
+</body>
+
 </html>

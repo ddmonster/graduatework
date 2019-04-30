@@ -8,10 +8,10 @@ from django.template import RequestContext
 # Create your views here.
 class UserForm(forms.Form):
     username=forms.CharField(label="用户名",max_length=50)
-    upassword=forms.CharField(label="密码",max_length=200)
+    upassword=forms.CharField(label='密码',widget=forms.PasswordInput())
 class loginform(forms.Form):
     username=forms.CharField(label="用户名",max_length=50)
-    upassword=forms.CharField(label="密码",max_length=200)
+    upassword=forms.CharField(label='密码',widget=forms.PasswordInput())
     email = forms.CharField(label="邮箱",max_length=50)
     phone = forms.CharField(label='手机号',max_length=20)
 
@@ -25,21 +25,27 @@ def signup(req):
     ifsuccess=False
     if req.method == 'POST':
         form = loginform(req.POST)
-        if uf.is_valid():
+        if form.is_valid():
             #获得表单数据
-            username = uf.cleaned_data['username']
-            password = uf.cleaned_data['upassword']
-            femail = uf.cleaned_data['email']
-            fphone = uf.cleaned_data['phone']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['upassword']
+            femail = form.cleaned_data['email']
+            fphone = form.cleaned_data['phone']
             #添加到数据库
-            usern=UserInfo.objects.create(username= username,upassword=password,email=femail,phone=fphone)
+            isuser=UserInfo.objects.filter(uname=username)
+            if isuser:
+                form= loginform()
+                ifsuccess=True
+                return render(req,'shopstore/signup.html',{"form":form,'ifsuccess':ifsuccess})
+            else:
+                usern=UserInfo.objects.create(uname= username,upassword=password,email=femail,phone=fphone)
             print(usern)
             if usern:
-                response=HttpResponseRedirect('shopstore/index.html')
+                response=HttpResponseRedirect('/')
                 response.set_cookie('username',username,3600)
                 return response
             else:
-                ifsuccess=False
+                ifsuccess=True
                 return render(req,'shopstore/signup.html',{"form":form,'ifsuccess':ifsuccess})
 
     return render(req,'shopstore/signup.html',{"form":form,'ifsuccess':ifsuccess})
@@ -67,5 +73,10 @@ def login(request):
 def logout(req):
     response = HttpResponseRedirect('/')
     #清理cookie里保存username
+    response.delete_cookie("commodity")
     response.delete_cookie('username')
     return response
+def userinfosearch(req):
+    username=req.COOKIES.get("username")
+    user=UserInfo.objects.filter(uname=username)
+

@@ -32,6 +32,7 @@
 		margin-bottom:6px;
 		box-shadow: 0 3px 15px 3px rgba(51, 51, 51, 0.5);
 	}
+
 	img{
 		box-shadow: 0 0 3px 1px rgba(51, 51, 51, 0.5);
 	}
@@ -68,36 +69,34 @@ div{
 {%extends 'navigate.html'%}
 <!--轮播 -->
 {%block content%}
+
 <!-- 轮播 -->
 	<div style="width:1300px;margin:0 auto">
 	{%for good in goods%}
 
-	<div class="show">
-			<div style="text-align: center">
-			<h5>{{good.title}}</h5>
+	<div class="show" >
+			<div id="com_id" style="display:none">{{good.id}}</div>
+			<div id="namepare" style="text-align: center">
+			<h5 id="good_name">{{good.title}}</h5>
 		</div>
 			<div style="display:flex;align-items:center;justify-content: center;">
 				<div style="position: relative">
-			<img style="width:100%;height:248px;cursor:pointer" src="/static/{{good.picture}}" alt="无法显示图片" title="点击查看详情">
+			<img style="width:100%;height:248px;cursor:pointer" src="/static/{{good.picture}}" alt="无法显示图片" title="">
 			<!-- <div class="detail" style="position:absolute;bottom:0px;background-color:rgb(83, 78, 85);width:248px;height:248px;opacity:0.5;visibility: hidden;"></div> -->
 		</div>
 			</div>
 			<strong style="color:red;font-size: 25px">¥{{good.price}}</strong>
 			<p>{{good.desc}}</p>
-			<div  class="addto" onclick="" >加入购物车</div>
-		
+			<div  class="addto">加入购物车</div>
+			
 	</div>
 	{%endfor%}
 	<div style="clear: both"></div>
 
 	</div>
-	{%endblock%}
-	<script src="/static/js/jquery.min.js"></script>
-	<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-	<script>
-		
-	</script>
 
+
+	{%endblock%}
 </body>
 
 </html>
