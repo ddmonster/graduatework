@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<HEADER>
+	<title>Shopping Cart</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="/static/js/jquery.min.js"></script>
+	<link href="/static/css/cart.css" media="screen" rel="stylesheet" type="text/css" />
+
+	<script src="/static/js/jquery.cookie-1.4.1.min.js"></script>
+	<link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+	<script>
+
+		$cartinfo = {
+			cartnum: function () {
+				
+					// var oldval= parseInt($("#cartnum").text())
+
+					var commodity = $.parseJSON($.cookie('commodity'));
+					var value = 0;
+					for (var key in commodity) {
+						value += commodity[key].num;
+
+					}
+					$("#cartnum").text(value);
+
+				
+
+			},
+			//传入id删除商品
+			deleId: function(id){
+				id=parseInt(id);
+				
+				var commodity = $.parseJSON($.cookie('commodity'))
+					for (var key in commodity) {
+						if(id==commodity[key].id){
+							//删除json传入变量使用[变量]形式
+							delete commodity[key];
+							break;
+						}
+
+					}
+					$.cookie('commodity',JSON.stringify(commodity),{expires :7,path:'/'});
+					$cartinfo.cartnum()
+			},
+			changeNum:function(id,num){
+				var commodity=$.parseJSON($.cookie('commodity'));
+
+				for(var key in commodity){
+					if(id==commodity[key].id){
+					
+						commodity[key].num=num;
+					
+						break;
+					}
+				}
+				$.cookie('commodity',JSON.stringify(commodity),{expires:7,path:'/'})
+				$cartinfo.cartnum()
+			},
+			totalCountPlus:function(id,flag){
+				id=parseInt(id)
+				itemCount=parseInt($('#itemCount').text());
+				priceTotal=parseFloat($('#priceTotal').text());
+				typeCount=parseInt($('#typeCount').text());
+
+					
+				
+				var commodity=$.parseJSON($.cookie('commodity'));
+				for(var key in commodity){
+
+					num=parseInt(commodity[key].num);
+					price=parseFloat(commodity[key].price);
+					com_id=parseInt(commodity[key].id)
+					if(id==com_id){
+						
+						if(flag){
+						
+							itemCount+=num;
+							priceTotal+=(num*price);
+						typeCount++;
+						}else{
+							itemCount-=num;
+							priceTotal-=(num*price);
+						typeCount--;
+						}
+				
+						break;
+					}
+
+			}
+			if(num!=0){
+				$('#typeCount').text(typeCount);
+			}
+			$('#itemCount').text(itemCount);
+			$('#priceTotal').text(priceTotal.toFixed(2));
+			
+
+			
+
+		},
+		
+		}
+
+		
+		$(document).ready(function(){
+		
+			$cartinfo.cartnum();
+			var name;
+			var price;
+			var desc;
+			var num;
+
+			var commodity=$.parseJSON($.cookie("commodity"));
+			for(var key in commodity){
+				name = key;
+				price = commodity[key].price;
+				desc = commodity[key].desc;
+				num = commodity[key].num;
+				id=commodity[key].id;
+				var stringbody='<tr>\
+					<td colspan="2" class="goods" ><label> <input type="checkbox"\
+								class="check-one check" />'+name+'</label></td>\
+					<td style="text-align:center">'+desc+'</td>\
+					<td class="selling-price number small-bold-red text-right" style="padding-top: 1.1rem;"\
+						data-bind="'+price+'">'+price+'</td>\
+					<td>\
+						<div class="input-group input-group-sm">\
+							<span class="input-group-addon minus">-</span> <input style="padding:0px;text-align:center" type="text"\
+								class="number form-control input-sm" value="'+num+'" />\
+							<span class="input-group-addon plus">+</span>\
+						</div>\
+					</td>\
+					<td class="subtotal number small-bold-red text-right" style="padding-top: 1.1rem;">'+parseInt(price)*parseInt(num)+'</td>\
+					<td class="action" style="padding-top: 1.1rem;"><span style="display:none" id="com_id" class="cls_com_id">'+id+'</span><span\
+							class="delete btn btn-xs btn-warning delete_span">删除</span></td>\
+				</tr>'
+				$("#pointer").append(stringbody);
+			}
+		})
+		$(document).ready(function(){
+				//减少小框数量
+			$('.minus').click(function(){
+				num=$(this).next().attr('value')
+				id=$(this).parent().parent().next().next().children('#com_id').text()
+				num=parseInt(num)
+				if(num!=0){
+					$(this).next().attr('value',--num);
+					//计算单类总价
+				price=$(this).parent().parent().prev().text();
+					total=parseInt(price)*num;
+					$cartinfo.changeNum(id,num)
+					if($(this).parent().parent().prevAll('.goods').children().children().is(":checked")){
+						$cartinfo.totalCountPlus(id,false)
+					}
+				
+					num=parseInt($("#cartnum").text())-1;
+
+					$("#cartnum").html(num);
+				//写入cookies
+				// id=$(this).prev().text()
+				// alert(id)
+				// $cartinfo.docartnum(id,num)
+				
+				
+				
+			
+				$(this).parent().parent().next().text(total);
+			}
+
+			})
+			//增加小框数量
+			$('.plus').click(function(){
+				num=$(this).prev().attr('value');
+				id=$(this).parent().parent().next().next().children('#com_id').text()
+				num=parseInt(num);
+				$(this).prev().attr('value',++num);
+
+				$cartinfo.changeNum(id,num);
+				if($(this).parent().parent().prevAll('.goods').children().children().is(":checked")){
+						$cartinfo.totalCountPlus(id,true)
+					}
+				price=$(this).parent().parent().prev().text();
+				//写入cookies
+				// id=$(this).prev().prev().prev().text()
+				// $cartinfo.docartnum(id,num)
+				//计算单类总价
+				total=parseInt(price)*num;
+				$(this).parent().parent().next().text(total);
+
+					
+			})
+			//删除商品
+			$('.delete').click(function(){
+				if(confirm("此操作将删除购物车的商品")){
+					$(this).parent().parent().text("")
+					
+					$cartinfo.deleId($(this).prev().text())
+
+				}
+				
+			})
+			//checkbox操作
+			$(".check-one").click(function(){
+				id=$(this).parent().parent().parent().children('.action').children("#com_id").text()
+				if($(this).is(":checked")){
+					
+					$cartinfo.totalCountPlus(id,true)
+
+				}else{
+					$cartinfo.totalCountPlus(id,false)
+				}
+			})
+			//check-all
+			$(".check-all").click(function(){
+
+				if($(this).is(":checked")){
+					$('.check-one').each(function(){
+					id=$(this).parent().parent().parent().children('.action').children("#com_id").text()
+					if(!$(this).is(":checked")){
+						$cartinfo.totalCountPlus(id,true)
+						$(this).prop("checked","true")
+					}
+					})
+			
+				}else{
+					$('.check-one').each(function(){
+					id=$(this).parent().parent().parent().children('.action').children("#com_id").text()
+					if($(this).is(":checked")){
+					$cartinfo.totalCountPlus(id,false)
+					$(this).removeProp("checked")
+					}
+				})
+	
+
+				}
+				
+			})
+
+			//ajax传送购物信息
+			$("#btn_settlement").click(function(){
+			var commodity=$.parseJSON($.cookie("commodity"));
+
+				$.ajax({
+					URL:"/order",
+					data:commodity,
+					method:"POST",
+					success:function(result){
+
+					},
+					error:function(){
+
+					}
+
+
+				})
+			})
+
+		})
+
+	</script>
+</HEADER>
+
+<body>
+		{%extends 'navigate.html'%}
+	{%block content%}
+		<div style="width:1108px;margin:0 auto;">
+				
+	<div class="cart-wrap">
+		<table id="cartTable" class="cart table table-condensed">
+			<thead>
+				<tr>
+					<th class="t-checkbox text-center" ><label style="width:80px;position:relative"><input style="position:absolute;left:3px" class="check-all check" type="checkbox"/>全选</label></th>
+					<th class="t-goods text-center"><label></label></th>
+					<th class="text-center" style="position:relative"><span style="position:absolute;left:0px">|</span>备注<span style="position:absolute;right:0px">|</th>
+					<th class="t-selling-price text-center"><label>销售单价</label></th>
+					<th class="t-qty text-center"><label>数量</label></th>
+					<th class="t-subtotal text-center"><label>金额小计</label></th>
+					<th class="t-action"><label>操作</label></th>
+				</tr>
+			</thead>
+			<tbody  id="pointer">
+				
+			</tbody>
+		</table>
+
+		<div class="row">
+			<div class="col-md-12 col-lg-12 col-sm-12">
+				<div class="cart-summary">
+					<div style="margin-left: 2rem;" class="pull-right">
+						<a href="" id="btn_settlement" type="button" class="btn btn-primary"
+							>去结算</a>
+					</div>
+					<div style="margin-left: 1rem; margin-top: 0.4rem;" class="pull-right total">
+						<label>金额合计:<span id="priceTotal" class="price-total large-bold-red">0.00</span></label>
+					</div>
+					<div style="margin-top: 4px;" class="pull-right">
+						<label>您选择了<span id="typeCount" class="large-bold-red"
+								style="margin: 0 4px;">0</span>种产品型号，共计<span id="itemCount" class="large-bold-red"
+								style="margin: 0 4px;">0</span>件
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+{%endblock%}
+</body>
+
+</html>

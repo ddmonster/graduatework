@@ -63,7 +63,7 @@ def login(request):
             print(havepe)
             if havepe:
                 response=HttpResponseRedirect('/')
-                response.set_cookie('username',username,3600)
+                response.set_cookie('username',username,604800)
                 return response
             else:  
                 form = UserForm()  
@@ -71,12 +71,21 @@ def login(request):
                 return render(request,"shopstore/login.html",{"havepe":havepe,"form":form}) 
     return render(request,'shopstore/login.html',{"havepe":havepe,"form":form})
 def logout(req):
-    response = HttpResponseRedirect('/')
+    response = HttpResponseRedirect('/cartinfo')
     #清理cookie里保存username
     response.delete_cookie("commodity")
     response.delete_cookie('username')
     return response
-def userinfosearch(req):
-    username=req.COOKIES.get("username")
-    user=UserInfo.objects.filter(uname=username)
 
+def cartinfo(req):
+    username=req.COOKIES.get("username")
+    return render(req,'shopstore/cartinfo.html',{"username":username})
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+# crsf 装饰器
+def order(req):
+    if req.method=="POST":
+        pass
+
+    return

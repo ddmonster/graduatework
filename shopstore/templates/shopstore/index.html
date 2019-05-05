@@ -8,6 +8,16 @@
 <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 
 <style>
+	body{
+		-moz-user-select: -moz-none; 
+-moz-user-select: none; 
+-o-user-select:none; 
+-khtml-user-select:none; 
+-webkit-user-select:none; 
+-ms-user-select:none; 
+user-select:none;
+
+	}
 	.addto{
 		position:absolute;
 		bottom:20px;
@@ -26,7 +36,16 @@
 		color:white;
 		font-size:16px;
 		box-shadow: 0 0 3px 1px rgba(51, 51, 51, 0.5);
-    transition: 0.3s;
+		transition: 0.3s;
+ /* 禁止文字被鼠标选中  */
+-moz-user-select: -moz-none; 
+-moz-user-select: none; 
+-o-user-select:none; 
+-khtml-user-select:none; 
+-webkit-user-select:none; 
+-ms-user-select:none; 
+user-select:none;
+
 	}
 	.addto:hover{
 		margin-bottom:6px;
@@ -42,19 +61,23 @@
 .show{
 	position:relative;
 	float:left;
-	width:250px;
+	width:260px;
 	height:420px;
 	border:1px;
 	border-color:  #ededed;
 	border-style:solid;
-	margin-top:22px;
+	margin-top:80px;
 	margin-right: 20px;
+	margin-left: 20px;
+
 
 
 
 }
-.show:hover{border-color:red;padding-bottom:20px;
-    box-shadow: 0 3px 15px 3px rgba(51, 51, 51, 0.5);
+.show:hover{
+	border-color:red;
+	padding-bottom:20px;
+  box-shadow: 0 3px 15px 3px rgba(51, 51, 51, 0.5);
 		}
 
 div{
@@ -65,13 +88,13 @@ div{
 
 </head>
 
-<body style="">
+<body onload="">
 {%extends 'navigate.html'%}
 <!--轮播 -->
 {%block content%}
 
 <!-- 轮播 -->
-	<div style="width:1300px;margin:0 auto">
+	<div style="width:1300px;margin:0 auto;">
 	{%for good in goods%}
 
 	<div class="show" >
@@ -85,17 +108,93 @@ div{
 			<!-- <div class="detail" style="position:absolute;bottom:0px;background-color:rgb(83, 78, 85);width:248px;height:248px;opacity:0.5;visibility: hidden;"></div> -->
 		</div>
 			</div>
-			<strong style="color:red;font-size: 25px">¥{{good.price}}</strong>
-			<p>{{good.desc}}</p>
-			<div  class="addto">加入购物车</div>
+			<strong style="color:red;font-size: 25px"><p style="display:inline">¥</p>{{good.price}}</strong>
+			<p >{{good.desc}}</p>
+			<div  class="addto" onmousedown="this.style='margin-bottom:0px;'" onmouseup="this.style='margin-bottom:6px;'">加入购物车</div>
 			
 	</div>
 	{%endfor%}
 	<div style="clear: both"></div>
 
 	</div>
+	<script>
+			$cartuse = {
+					// 检查重复增加数量
+					ifsame: function(json, id) {
+							for (var key in json) {
+									if (json[key].id == id) {
+											json[key].num += 1;
+											return false
+									}
+							}
+							return true
 
+					},
+					//     / 添加到cookies  的json数据结构
+					//       var commodity={
+					//     commodity_name:{commodity_name:commodity_id,num:1,price:price,descrip;desc;}
+					//    }
+					addtocookies:function(id, name,desc,price) {
+							// 取出cookies中json数组 转化为json格式
+							var commodity={}
+							if (!$.cookie('commodity')) {
+									
+									 commodity = {
+											[name]:{ 'id': id, 'num': 1 ,'desc':desc,'price':price}
+									}
+	
 
+							} else {
+									 commodity = $.parseJSON($.cookie('commodity'))
+									//检查重复
+									if ($cartuse.ifsame(commodity, id)) {
+											//如果重复增加数量后写入返回false不执行下列语句
+											//如果不重复 执行下列语句进行第一次写入
+
+											//添加json数据   也可使用 json.name=value方式
+											commodity[name] = { 'id': id, 'num': 1 ,'desc':desc,'price':price}
+
+									}
+
+							}
+							$.cookie('commodity', JSON.stringify(commodity), { expires: 7 , path: '/'});
+
+					},
+					cartnum: function() {
+						 
+									// var oldval= parseInt($("#cartnum").text())
+
+									var commodity = $.parseJSON($.cookie('commodity'))
+									var value=0
+									for (var key in commodity) {
+											value += commodity[key].num                      
+									}
+									$("#cartnum").text(value)
+
+						 
+
+					}
+			}
+			$(".addto").click(function() {
+
+					commodity_id = parseInt($(this).parent().children("#com_id").text());
+					commodity_name = $(this).parent().children("#namepare").children("#good_name").text();
+				 commodity_price=$(this).parent().children("strong").text().slice(1)
+				 commodity_desc=$(this).parent().children("p").text()
+					//   使用cookies存储购物车信息  json数据格式作为cookies值 调用函数cartuse
+					$cartuse.addtocookies(commodity_id, commodity_name,commodity_desc,commodity_price)
+					$cartuse.cartnum();
+					// $.each(commodity,function(idx,obj){
+					//     alert(obj.tagName);
+					// }); 
+					$(this).parent().css({"border-color":"red","box-shadow":" 0 3px 15px 3px rgba(51, 51, 51, 0.5)"}	)
+			})
+		 $(document).ready(function(){
+			$cartuse.cartnum();
+		 })
+	 
+	</script>
+	
 	{%endblock%}
 </body>
 
