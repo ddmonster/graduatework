@@ -140,7 +140,7 @@ div{
 							if (!$.cookie('commodity')) {
 									
 									 commodity = {
-											[name]:{ 'id': id, 'num': 1 ,'desc':desc,'price':price}
+											[name]:{ 'id': id, 'num': 1 ,'desc':desc,'price':price,'selected':false}
 									}
 	
 
@@ -152,7 +152,7 @@ div{
 											//如果不重复 执行下列语句进行第一次写入
 
 											//添加json数据   也可使用 json.name=value方式
-											commodity[name] = { 'id': id, 'num': 1 ,'desc':desc,'price':price}
+											commodity[name] = { 'id': id, 'num': 1 ,'desc':desc,'price':price,'selected':false}
 
 									}
 

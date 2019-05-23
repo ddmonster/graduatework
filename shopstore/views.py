@@ -82,10 +82,14 @@ def cartinfo(req):
     return render(req,'shopstore/cartinfo.html',{"username":username})
 
 from django.views.decorators.csrf import csrf_exempt
+import json
 @csrf_exempt
 # crsf 装饰器
 def order(req):
     if req.method=="POST":
-        pass
-
-    return
+        commodity=json.loads(req.body)
+        print(commodity)
+        ok={'ok':'success'}
+        return HttpResponse(json.dumps(ok),content_type='application/json')
+    else:
+        return HttpResponse("fail")

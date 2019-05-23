@@ -11,6 +11,99 @@
 	<script>
 
 		$cartinfo = {
+			checkdisplay:function(){
+				var commodity=$.parseJSON($.cookie('commodity'));
+			$('.check-one').each(function(){
+					id=$(this).parent().parent().parent().children('.action').children("#com_id").text()
+					for(var key in commodity){
+						if(commodity[key].id==id){
+							if(commodity[key].selected){
+								$cartinfo.totalCountPlus(id,true)
+								$(this).prop("checked","true")
+							}
+				
+						}
+					}
+					})
+			},
+			commodityDisplay:function(){
+				var name;
+				var price;
+				var desc;
+				var num;
+				$("#pointer").text("");
+				var commodity=$.parseJSON($.cookie("commodity"));
+				for(var key in commodity){
+					name = key;
+					price = commodity[key].price;
+					desc = commodity[key].desc;
+					num = commodity[key].num;
+					id=commodity[key].id;
+					var stringbody='<tr>\
+						<td colspan="2" class="goods" ><label> <input type="checkbox"\
+									class="check-one check" />'+name+'</label></td>\
+						<td style="text-align:center">'+desc+'</td>\
+						<td class="selling-price number small-bold-red text-right" style="padding-top: 1.1rem;"\
+							data-bind="'+price+'">'+price+'</td>\
+						<td>\
+							<div class="input-group input-group-sm">\
+								<span class="input-group-addon minus">-</span> <input style="padding:0px;text-align:center" type="text"\
+									class="number form-control input-sm" value="'+num+'" />\
+								<span class="input-group-addon plus">+</span>\
+							</div>\
+						</td>\
+						<td class="subtotal number small-bold-red text-right" style="padding-top: 1.1rem;">'+parseInt(price)*parseInt(num)+'</td>\
+						<td class="action" style="padding-top: 1.1rem;"><span style="display:none" id="com_id" class="cls_com_id">'+id+'</span><span\
+								class="delete btn btn-xs btn-warning delete_span">删除</span></td>\
+					</tr>'
+					$("#pointer").append(stringbody);
+					}
+			},
+			sendOrder:function(){
+				var commodity=$.parseJSON($.cookie("commodity"));
+				for(var key in commodity){
+					if(!commodity[key].selected)
+					delete commodity[key];
+
+				}
+				commodity=JSON.stringify(commodity)
+				$.ajax({
+					url:"/order/",
+					data: commodity ,
+					method:"POST",
+					dataType:'json',
+					success:function(result){
+					var commodity=$.parseJSON($.cookie("commodity"));
+					for(var key in commodity){
+						if(commodity[key].selected){
+							$cartinfo.deleId(commodity[key].id)
+						}
+					}
+					$cartinfo.cartnum();
+					$cartinfo.commodityDisplay();
+					$('#typeCount').text(0);
+					$('#itemCount').text(0);
+					$('#priceTotal').text(0.00);
+
+					},
+					error:function(result){
+						alert("erro")
+					}
+
+				})
+			},
+			
+				// 检查重复增加数量
+			ifsame: function(json, id) {
+							for (var key in json) {
+									if (json[key].id == id) {
+											json[key].num += 1;
+											return false
+									}
+							}
+							return true
+
+					},
 			cartnum: function () {
 				
 					// var oldval= parseInt($("#cartnum").text())
@@ -66,18 +159,17 @@
 				
 				var commodity=$.parseJSON($.cookie('commodity'));
 				for(var key in commodity){
-
 					num=parseInt(commodity[key].num);
 					price=parseFloat(commodity[key].price);
 					com_id=parseInt(commodity[key].id)
 					if(id==com_id){
-						
 						if(flag){
-						
+							commodity[key].selected=true;
 							itemCount+=num;
 							priceTotal+=(num*price);
 						typeCount++;
 						}else{
+							commodity[key].selected=false;
 							itemCount-=num;
 							priceTotal-=(num*price);
 						typeCount--;
@@ -85,60 +177,28 @@
 				
 						break;
 					}
+			
 
 			}
+			$.cookie('commodity',JSON.stringify(commodity),{expires :7,path:'/'});
 			if(num!=0){
 				$('#typeCount').text(typeCount);
 			}
 			$('#itemCount').text(itemCount);
 			$('#priceTotal').text(priceTotal.toFixed(2));
-			
-
-			
-
 		},
-		
+		//end
 		}
 
 		
 		$(document).ready(function(){
-		
+			$cartinfo.commodityDisplay();
 			$cartinfo.cartnum();
-			var name;
-			var price;
-			var desc;
-			var num;
+			$cartinfo.checkdisplay();
 
-			var commodity=$.parseJSON($.cookie("commodity"));
-			for(var key in commodity){
-				name = key;
-				price = commodity[key].price;
-				desc = commodity[key].desc;
-				num = commodity[key].num;
-				id=commodity[key].id;
-				var stringbody='<tr>\
-					<td colspan="2" class="goods" ><label> <input type="checkbox"\
-								class="check-one check" />'+name+'</label></td>\
-					<td style="text-align:center">'+desc+'</td>\
-					<td class="selling-price number small-bold-red text-right" style="padding-top: 1.1rem;"\
-						data-bind="'+price+'">'+price+'</td>\
-					<td>\
-						<div class="input-group input-group-sm">\
-							<span class="input-group-addon minus">-</span> <input style="padding:0px;text-align:center" type="text"\
-								class="number form-control input-sm" value="'+num+'" />\
-							<span class="input-group-addon plus">+</span>\
-						</div>\
-					</td>\
-					<td class="subtotal number small-bold-red text-right" style="padding-top: 1.1rem;">'+parseInt(price)*parseInt(num)+'</td>\
-					<td class="action" style="padding-top: 1.1rem;"><span style="display:none" id="com_id" class="cls_com_id">'+id+'</span><span\
-							class="delete btn btn-xs btn-warning delete_span">删除</span></td>\
-				</tr>'
-				$("#pointer").append(stringbody);
-			}
-		})
-		$(document).ready(function(){
+			//$("#pointer").on("click", ".minus",
 				//减少小框数量
-			$('.minus').click(function(){
+				$("#pointer").on("click", ".minus",function(){
 				num=$(this).next().attr('value')
 				id=$(this).parent().parent().next().next().children('#com_id').text()
 				num=parseInt(num)
@@ -168,7 +228,7 @@
 
 			})
 			//增加小框数量
-			$('.plus').click(function(){
+			$("#pointer").on("click", ".plus",function(){
 				num=$(this).prev().attr('value');
 				id=$(this).parent().parent().next().next().children('#com_id').text()
 				num=parseInt(num);
@@ -189,7 +249,7 @@
 					
 			})
 			//删除商品
-			$('.delete').click(function(){
+			$("#pointer").on("click", ".delete",function(){
 				if(confirm("此操作将删除购物车的商品")){
 					$(this).parent().parent().text("")
 					
@@ -199,10 +259,9 @@
 				
 			})
 			//checkbox操作
-			$(".check-one").click(function(){
+			$("#pointer").on("click", ".check-one",function(){
 				id=$(this).parent().parent().parent().children('.action').children("#com_id").text()
 				if($(this).is(":checked")){
-					
 					$cartinfo.totalCountPlus(id,true)
 
 				}else{
@@ -210,7 +269,7 @@
 				}
 			})
 			//check-all
-			$(".check-all").click(function(){
+			$("#pointer").on("click", ".check-all",function(){
 
 				if($(this).is(":checked")){
 					$('.check-one').each(function(){
@@ -237,21 +296,7 @@
 
 			//ajax传送购物信息
 			$("#btn_settlement").click(function(){
-			var commodity=$.parseJSON($.cookie("commodity"));
-
-				$.ajax({
-					URL:"/order",
-					data:commodity,
-					method:"POST",
-					success:function(result){
-
-					},
-					error:function(){
-
-					}
-
-
-				})
+				$cartinfo.sendOrder()
 			})
 
 		})
@@ -286,7 +331,7 @@
 			<div class="col-md-12 col-lg-12 col-sm-12">
 				<div class="cart-summary">
 					<div style="margin-left: 2rem;" class="pull-right">
-						<a href="" id="btn_settlement" type="button" class="btn btn-primary"
+						<a  id="btn_settlement" type="button" class="btn btn-primary"
 							>去结算</a>
 					</div>
 					<div style="margin-left: 1rem; margin-top: 0.4rem;" class="pull-right total">
