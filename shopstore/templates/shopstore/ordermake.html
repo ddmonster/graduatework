@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <title>创建订单</title>
+        <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+        <scritp>
+            $cartinfo = {
+                sendOrder:function(){
+                    var commodity=$.parseJSON($.cookie("commodity"));
+                    for(var key in commodity){
+                        if(!commodity[key].selected)
+                        delete commodity[key];
+    
+                    }
+                    commodity=JSON.stringify(commodity)
+                    $.ajax({
+                        url:"/order/",
+                        data: commodity ,
+                        method:"POST",
+                        dataType:'json',
+                        success:function(result){
+                        var commodity=$.parseJSON($.cookie("commodity"));
+                        for(var key in commodity){
+                            if(commodity[key].selected){
+                                $cartinfo.deleId(commodity[key].id)
+                            }
+                        }
+                        $cartinfo.cartnum();
+                        $cartinfo.commodityDisplay();
+                        $('#typeCount').text(0);
+                        $('#itemCount').text(0);
+                        $('#priceTotal').text(0.00);
+    
+                        },
+                        error:function(result){
+                            alert("erro")
+                        }
+    
+                    })
+                }
+            }
+         </scritp>
+    </header>
+    <body>
+        
+        {%extends 'navigate.html'%}
+        {%block content%}
+        <div style="width:560px;margin:0 auto;margin-top:54px">
+
+        </div>
+
+
+         {%endblock%}
+    </body>
+</html>

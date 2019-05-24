@@ -2,6 +2,7 @@ from django.shortcuts import render,render_to_response
 from django.http import HttpResponse
 from commodity.models import Goods
 from userinfo.models import UserInfo,Adress
+from cartinfo.models import Order
 from django import forms
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
@@ -112,6 +113,7 @@ def cartinfo(req):
 def userinfo(req):
     username=req.COOKIES.get("username")
     userinfo=UserInfo.objects.filter(uname=username)
+    print(userinfo.values())
     return render(req,'shopstore/userinfo.html',{"username":username,'userinfo':userinfo})
 
 
@@ -127,8 +129,9 @@ def changeinfo(req):
                 femail=req.POST["email"]
                 fphone=req.POST["phone"]
                 UserInfo.objects.filter(uname=username).update(uname=funame,email=femail,phone=fphone)
+                return HttpResponseRedirect("/login")
         except:
-            pass
+            print("erro")
         try:
             if req.POST['ads']:
                 print('hi')
@@ -144,15 +147,22 @@ def changeinfo(req):
         userinfo=UserInfo.objects.filter(uname=username)
         return render(req,'shopstore/userinfo.html',{"username":username,'userinfo':userinfo})
     userinfo=userinfo.values()[0]
-    addresinfo=Adress.objects.filter(id=userinfo['addr_id']).values()[0]
+
     flag=req.GET['flag']
     if flag=='user':
         form = changeuserinfoform(initial={'uname':userinfo['uname'],'email':userinfo['email'],'phone':userinfo['phone']})
         # form = changeuserinfoform()
         return render(req,'shopstore/changeinfo.html',{"username":username,'userinfo':userinfo,'form':form})
     if flag=='address':
-        form = changeadsinfoform(initial={'name':addresinfo['aname'],'ads':addresinfo['ads'],'zipcode':addresinfo['zipcode'],'adsphone':addresinfo['phone']})
-        return render(req,'shopstore/changeinfo.html',{"username":username,'form':form})
+        try:
+            addresinfo=Adress.objects.filter(id=userinfo['addr_id']).values()[0]
+            form = changeadsinfoform(initial={'name':addresinfo['aname'],'ads':addresinfo['ads'],'zipcode':addresinfo['zipcode'],'adsphone':addresinfo['phone']})
+            return render(req,'shopstore/changeinfo.html',{"username":username,'form':form})
+        except:
+            username=req.COOKIES.get("username")
+            form = changeadsinfoform()
+            return HttpResponseRedirect("/addads")
+
     userinfo=UserInfo.objects.filter(uname=username)
     return render(req,'shopstore/userinfo.html',{"username":username,'userinfo':userinfo})
 
@@ -166,19 +176,60 @@ def addads(req):
         fzipcode=req.POST["zipcode"]
         fadsphone=req.POST["adsphone"]
         name=Adress.objects.create(aname=faname,ads=fads,zipcode=fzipcode,phone=fadsphone)
-        addr_id=Adress.objects.filter(aname=name)
+        addr_id=Adress.objects.filter(aname=name).values()[0]['id']
+        userinfo.update(addr=addr_id)
+        return HttpResponseRedirect('/userinfo')
     form = changeadsinfoform()
     return render(req,'shopstore/addads.html',{"username":username,'form':form})
 
+
+# #添加关联many to many
+# b.auther.add(p)
+
+# #去除关联
+# b.auther.remove(p)
+
+# #返回所有作者
+# b.auther.all()
 from django.views.decorators.csrf import csrf_exempt
 import json
+import time
 @csrf_exempt
 # crsf 装饰器
 def order(req):
+    username=req.COOKIES.get("username")
     if req.method=="POST":
         commodity=json.loads(req.body)
-        print(commodity)
+        order=Order()
+        order_no = str(time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))) \
+        + str(time.time()).replace('.', '')[-7:]
+        order.orderNo=order_no
+        acotnum=0
+        acount=0
+        for key in commodity:
+            acotnum+=int(commodity[key]['num'])
+            acount+=int(commodity[key]['num'])*float(commodity[key]['price'])
+            try:
+                print(Goods.objects.get(id=commodity[key]['id']))
+                order.goods.add(Goods.objects.get(id=commodity[key]['id']))
+                print(order.goods)
+            except:
+                pass
+        order.acot=acotnum
+        order.acount=acount
+        order.user=UserInfo.objects.get(uname=username)
+        order.save()
+        order=Order.objects.get(orderNo=order_no)
+        print(order.user,order.goods)
         ok={'ok':'success'}
         return HttpResponse(json.dumps(ok),content_type='application/json')
     else:
-        return HttpResponse("fail")
+        return render(req,'shopstore/cartinfo.html',{"username":username})
+
+def myorder(req):
+    username=req.COOKIES.get("username")
+    userid=UserInfo.objects.get(uname=username).id
+    orders=Order.objects.filter(user_id=userid)
+    
+    print(orders)
+    return render(req,'shopstore/order.html',{"orders":orders,"username":username})

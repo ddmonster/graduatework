@@ -10,9 +10,9 @@ from commodity.models import Goods
 # goods 商品（关联Goods）
 # ccount 数量（数量）
 ORDERSTATUS = (
-    (1,'未支付',),
-    (2,'已支付',),
-    (3,'订单取消',),
+    (1,'已提交',),
+    (2,'处理中',),
+    (3,'已完成',),
 )
 class CartInfo(models.Model):
     user = models.ForeignKey(UserInfo,on_delete=models.CASCADE)
@@ -35,16 +35,11 @@ class CartInfo(models.Model):
 # orderstatus 状态
 class Order(models.Model):
     orderNo = models.CharField('商品编号',max_length=50)
-    orderdetail = models.TextField('订单详情')
-    adsname = models.CharField('收件人姓名',max_length=30,null=False)
-    adsphone = models.CharField('收件人电话',max_length=20,null=False)
-    ads = models.CharField('地址',max_length=300)
     time = models.DateTimeField(auto_now=True)
-    acot = models.IntegerField('总数')
-    acount = models.DecimalField('总价',max_digits=8,decimal_places=2)
+    acot = models.IntegerField('总数',null=True)
+    acount = models.DecimalField('总价',max_digits=8,decimal_places=2,null=True)
     orderstatus = models.IntegerField('订单',choices=ORDERSTATUS,default=1)
-    user = models.ForeignKey(UserInfo,on_delete=models.CASCADE
-    )
- 
+    user = models.ForeignKey(UserInfo,on_delete=models.CASCADE,null=True)
+    goods=models.ManyToManyField(Goods,related_name='goods')
     def __str__(self):
         return self.orderNo

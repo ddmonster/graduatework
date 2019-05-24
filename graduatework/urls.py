@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^order/$',views.order),
     url(r'^userinfo$',views.userinfo),
     url(r'^changeinfo$',views.changeinfo),
-    url(r'^addads$',views.addads)
+    url(r'^addads$',views.addads),
+    url(r'^myorder$',views.myorder),
+    
 
 ]

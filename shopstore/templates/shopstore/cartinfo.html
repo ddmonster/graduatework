@@ -296,7 +296,11 @@
 
 			//ajax传送购物信息
 			$("#btn_settlement").click(function(){
-				$cartinfo.sendOrder()
+				if(confirm("是否创建订单")){
+					$cartinfo.sendOrder()
+				}
+
+				
 			})
 
 		})
