@@ -4,11 +4,11 @@ from django.db import models
 class Adress(models.Model):
     aname = models.CharField('收货人',max_length=50,null=False,default="null")
     ads = models.CharField('地址',max_length=300,null=False,default="null")
+    zipcode = models.CharField('邮编',max_length=300,null=False,default="null")
     phone = models.CharField('电话',max_length=20,null=False,default="null")
-    
- 
     def __str__(self):
         return self.aname
+    
 class UserInfo(models.Model):
     uname = models.CharField('用户名',max_length=50,null=False,unique=True)
     upassword = models.CharField('密码',max_length=200,null=False)
@@ -21,4 +21,5 @@ class UserInfo(models.Model):
  
     def __str__(self):
         return self.uname
+
  

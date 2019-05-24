@@ -9,8 +9,42 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-    <title>登陆</title>
+    <title>userinfo</title>
+    <style>
+      .div-heading{
+        width:160px;
+        display:inline-block;
+        
+        font: 400 13px Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+      }
+      .info-user{
+        display:inline-block;
+        width:180px;
+        color: #202124;font-family: Roboto,Arial,sans-serif;
+        font-size:16px;
 
+      }
+      .middle-line{
+        border: 0.5px solid #dadce0;
+        margin-left: 24px
+      }
+    .container-div{
+      padding: 12px;
+      padding-left:24px;
+      height:60px;
+      position:relative;
+    }
+    .change{
+      position:absolute;
+      right:20px
+    }
+    .button-po{
+      margin-top:10px
+     
+    }
+    
+    
+    </style>
 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -21,9 +55,41 @@
   </head>
 <body>
     {%extends 'navigate.html'%}
-    {%block search%}
-    {%endblock%}
+
     {%block content%}
-    
+    <div style="width:560px;margin:0 auto;margin-top:54px">
+      <h1 style="margin:0 auto;text-align:center;font-family: 'Google Sans',Roboto,Arial,sans-serif;margin:100px 0 8px 0">用户信息</h1>
+      {%for user in userinfo%}
+      <div style="width:900;height:480px;margin:0 auto;border-radius: 8px;border: 1px solid #dadce0;font-family: 'Google Sans',Roboto,Arial,sans-serif;">
+          <div class="container-div"><span class="div-heading" >用户名</span><span class="info-user">{{user.uname}}</span></div>
+          <div class="middle-line"><div></div></div>
+          <div class="container-div"><span class="div-heading">邮箱 </span><span class="info-user">{{user.email}}</span></div>
+          <div class="middle-line"><div></div></div>
+          <div class="container-div"><span class="div-heading">手机号</span></span><span class="info-user">{{user.phone}}</span></div>
+          <div class="middle-line"><div></div></div>
+          <div class="container-div"><span class="div-heading">注册时间</span></span><span class="info-user">{{user.time}}</span></div>
+          <div class="middle-line"><div></div></div>
+          <div style="height:190px" class="container-div"><div class="div-heading" >地址信息</div>
+          <div style="display:inline-block">
+             <div><label class="div-heading">收货人</label><span class="info-user">{{user.addr.aname}}</span></div> 
+             <div><label class="div-heading">地址</label><span class="info-user">{{user.addr.ads}}</span></div> 
+              <div><label class="div-heading">邮编</label><span class="info-user">{{user.addr.zipcode}}</span></div>
+              <div><label class="div-heading">收货号码</label><span class="info-user">{{user.addr.phone}}</span></div>
+
+          </div>
+          <form action="/changeinfo" method="GET"> 
+            <input type="hidden" name="flag" value="user" >   
+          
+            <input class="btn btn-lg btn-primary btn-block button-po" type="submit" value="修改用户信息" ></input>
+          </form>    
+          <form action="/changeinfo" method="GET">
+            <input type="hidden" name="flag" value="address" >   
+            <input class="btn btn-lg btn-primary btn-block button-po" type="submit" value="修改地址信息" ></input>
+          </form>   
+         </div>
+        </div>
+
+      {%endfor%}
+    </div>
     {%endblock%}
 </body>

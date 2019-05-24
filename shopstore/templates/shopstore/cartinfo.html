@@ -269,8 +269,8 @@
 				}
 			})
 			//check-all
-			$("#pointer").on("click", ".check-all",function(){
-
+			$("#cartTable").on("click", ".check-all",function(){
+				alert("checkall")
 				if($(this).is(":checked")){
 					$('.check-one').each(function(){
 					id=$(this).parent().parent().parent().children('.action').children("#com_id").text()

@@ -26,6 +26,9 @@ urlpatterns = [
     url(r'^signup/$',views.signup),
     url(r'^logout/$',views.logout),
     url(r'^cartinfo/$',views.cartinfo),
-    url(r'^order/$',views.order)
+    url(r'^order/$',views.order),
+    url(r'^userinfo$',views.userinfo),
+    url(r'^changeinfo$',views.changeinfo),
+    url(r'^addads$',views.addads)
 
 ]
